@@ -1,51 +1,92 @@
+from enum import Enum
+from typing import Optional
+
 class Card:
-    def __init__(self, id: str, color: str = ""):
-        self.__id = id
-        self.__color = color
-        self.__wild = color == ""
-
+    def __init__(self, card_id: str, color: str, num: int):
+        self.num = num
+        self.id = card_id
+        self.wild = color == "wild" or color == ""
+        self.color = color
+    
     def get_color_name(self) -> str:
-        return {
+        color_map = {
             "R": "Red",
-            "Y": "Yellow",
+            "G": "Green", 
             "B": "Blue",
-            "G": "Green",
-        }[self.__color]
+            "Y": "Yellow"
+        }
+        return color_map.get(self.color, "")
     
-    def get_value(self) -> str:
+    def get_color_code(self) -> int:
+        color_codes = {
+            "R": 0xff5555,
+            "G": 0x55aa55,
+            "B": 0x5555ff,
+            "Y": 0xffaa00
+        }
+        return color_codes.get(self.color, 0x080808)
+    
+    def get_value(self) -> int:
         val = 0
-        match self.__color:
-            case "R":
-                val += 100000    
-            case "Y":
-                val += 10000
-            case "G":
-                val += 1000
-            case "B":
-                val += 100
-            case _:
-                val + 1000000
-
-        match self.__id:
-            case 'SKIP':
-                val += 10
-            case 'REVERSE':
-                val += 11
-            case '+2':
-                val += 12
-            case 'WILD':
-                val += 13
-            case 'WILD+4':
-                val += 14
-            case _:
-                val = int(self.__id)
+        
+        color_values = {
+            "R": 100000,
+            "G": 1000,
+            "B": 100,
+            "Y": 10000
+        }
+        val += color_values.get(self.color, 1000000)
+        
+        special_cards = {
+            "SKIP": 10,
+            "REVERSE": 11,
+            "+2": 12,
+            "WILD": 13,
+            "WILD+4": 14
+        }
+        
+        if self.id in special_cards:
+            val += special_cards[self.id]
+        else:
+            try:
+                card_num = int(self.id)
+                val += card_num
+            except ValueError:
+                pass
+        
         return val
-
-
-    def __str__(self):
-        if self.__color:
-            return f"{self.get_color_name()} {self.__id}"
-
-        return self.__id
-           
     
+    def __str__(self) -> str:
+        if self.wild:
+            return self.id
+        else:
+            color_name = self.get_color_name()
+            return f"{color_name} {self.id}"
+    
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Card):
+            return False
+        return self.get_value() == other.get_value()
+    
+    def __lt__(self, other) -> bool:
+        if not isinstance(other, Card):
+            return NotImplemented
+        return self.get_value() < other.get_value()
+    
+    def __le__(self, other) -> bool:
+        if not isinstance(other, Card):
+            return NotImplemented
+        return self.get_value() <= other.get_value()
+    
+    def __gt__(self, other) -> bool:
+        if not isinstance(other, Card):
+            return NotImplemented
+        return self.get_value() > other.get_value()
+    
+    def __ge__(self, other) -> bool:
+        if not isinstance(other, Card):
+            return NotImplemented
+        return self.get_value() >= other.get_value()
+    
+    def __hash__(self) -> int:
+        return hash((self.id, self.color, self.num))
