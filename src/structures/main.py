@@ -26,19 +26,21 @@ def print_ascii_card(card):
         symbol = color_symbols.get(card.color, "?")
         color_name = card.get_color_name()
     
-    card_display = card.id if len(card.id) <= 4 else card.id[:4]
+    card_display = card.id if len(card.id) <= 7 else card.id[:7]
     
-    print("┌─────────┐")
-    print(f"│{symbol}       {symbol}│")
-    print("│         │")
-    print(f"│   {card_display:^5}   │")
-    print("│         │")
-    print(f"│{symbol}       {symbol}│")
-    print("└─────────┘")
+    print("┌───────────┐")
+    print(f"│{symbol}         {symbol}│")
+    print("│           │")
+    print(f"│  {card_display:^7}  │")
+    print("│           │")
+    print(f"│{symbol}         {symbol}│")
+    print("└───────────┘")
     print(f"  {color_name}")
 
 def print_hand_ascii(player):
-    """Print player's hand in ASCII art"""
+    """Print player's hand in ASCII art with improved alignment"""
+    color_symbols = {"R": "♦", "G": "♣", "B": "♠", "Y": "♥"}
+    
     print(f"\n{player.username}'s Hand ({len(player.hand)} cards):")
     print("=" * 50)
     
@@ -51,7 +53,7 @@ def print_hand_ascii(player):
         print()
         
         for card in row_cards:
-            symbol = "★" if card.wild else {"R": "♦", "G": "♣", "B": "♠", "Y": "♥"}.get(card.color, "?")
+            symbol = "★" if card.wild else color_symbols.get(card.color, "?")
             print(f"│{symbol}       {symbol}│", end=" ")
         print()
         
@@ -60,8 +62,8 @@ def print_hand_ascii(player):
         print()
         
         for card in row_cards:
-            card_display = card.id if len(card.id) <= 4 else card.id[:4]
-            print(f"│   {card_display:^5}   │", end=" ")
+            card_display = card.id if len(card.id) <= 7 else card.id[:7]
+            print(f"│ {card_display:^7} │", end=" ")
         print()
         
         for card in row_cards:
@@ -69,7 +71,7 @@ def print_hand_ascii(player):
         print()
         
         for card in row_cards:
-            symbol = "★" if card.wild else {"R": "♦", "G": "♣", "B": "♠", "Y": "♥"}.get(card.color, "?")
+            symbol = "★" if card.wild else color_symbols.get(card.color, "?")
             print(f"│{symbol}       {symbol}│", end=" ")
         print()
         
@@ -79,7 +81,7 @@ def print_hand_ascii(player):
         
         for card in row_cards:
             color_name = "WILD" if card.wild else card.get_color_name()
-            print(f"  {color_name:^9}", end=" ")
+            print(f" {color_name:^9} ", end=" ")
         print()
         print() 
 
@@ -100,7 +102,6 @@ def play_terminal_game():
     input("Press Enter to continue...")
     
     while game.queue: 
-        clear_terminal()
         current_player = game.get_curr_player()
         current_card = game.get_curr_card()
         
@@ -141,6 +142,7 @@ def play_terminal_game():
             elif command == "draw":
                 result = game.draw()
                 print(f"Drew card number: {result}")
+                break
                 
             elif command == "table":
                 print(game.table())
@@ -180,8 +182,10 @@ def play_terminal_game():
                     break
                 else:
                     print("Invalid color. Please choose red, green, blue, or yellow.")
+            game.play(card_input, color_choice)
         
         input(f"\n{current_player.username}'s turn is over. Press Enter to continue...")
+        clear_terminal()
         countdown()
 
 if __name__ == "__main__":

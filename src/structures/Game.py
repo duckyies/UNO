@@ -25,7 +25,7 @@ class UnoGame:
     def generate_rules() -> List[Rule]:
         return [
             Rule(0, "The number of decks to use.", 1, "Decks", "integer", 8, 1),
-            Rule(1, "How many cards to pick up at the beginning.", 7, "Initial Cards", "integer", 5000, 1),
+            Rule(1, "How many cards to pick up at the beginning.", 1, "Initial Cards", "integer", 5000, 1),
             Rule(2, "Whether pickup cards (+2, +4) should also skip the next person's turn.", 1, "Draws Skip", "boolean", 0, 0),
             Rule(3, "Whether reverse cards skip turns when there's only two players left.", 1, "Reverses Skip", "boolean", 0, 0),
             Rule(4, "Whether someone must play a card if they are able to.", 0, "Must Play", "boolean", 0, 0),
@@ -94,7 +94,7 @@ class UnoGame:
         for player_id in self.players.keys():
             self.deal(player_id, start_card_no)
 
-    def deal(self, player_id: int, number: int) -> int:
+    def deal(self, player_id: int, number: int) -> str:
         if len(self.deck) < number:
             if len(self.discard) == 0:
                 raise Exception("Not enough cards found to play")
@@ -108,7 +108,7 @@ class UnoGame:
         if not player:
             raise Exception(f"Player with id {player_id} not found")
         
-        card_num = self.deck[0].num if self.deck else -1
+        card_num = f"{self.deck[0].get_color_name()} {self.deck[0].id}" if self.deck else -1
         
         for _ in range(number):
             if self.deck:
@@ -172,7 +172,7 @@ class UnoGame:
                 return f"Card {found_card_num} not found in hand, it's currently {player.username}'s turn"
 
             curr_card = self.discard[-1]
-            if card_obj.wild or card_obj.color == "" or curr_card.id == card_obj.id or curr_card.color == card_obj.color:
+            if card_obj.wild or card_obj.color == "" or curr_card.id == card_obj.id or curr_card.color == card_obj.color or curr_card.color == "":
                 self.called_out = False
                 self.discard.append(card_obj)
 

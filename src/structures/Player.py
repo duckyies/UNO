@@ -54,8 +54,7 @@ class Player:
             else:
                 potential_color = self.parse_color(words[1])
                 if potential_color != "":
-                    card_id = words
-                    color = potential_color
+                    return None
                 else:
                     card_id = words[0]
                     color = ""
