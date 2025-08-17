@@ -16,16 +16,7 @@ class Card:
             "Y": "Yellow"
         }
         return color_map.get(self.color, "")
-    
-    def get_color_code(self) -> int:
-        color_codes = {
-            "R": 0xff5555,
-            "G": 0x55aa55,
-            "B": 0x5555ff,
-            "Y": 0xffaa00
-        }
-        return color_codes.get(self.color, 0x080808)
-    
+
     def get_value(self) -> int:
         val = 0
         

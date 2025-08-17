@@ -165,7 +165,7 @@ def play_terminal_game():
             else:
                 print("Invalid command. Try again.")
         
-        if game.discard and game.discard[-1].wild and hasattr(game.discard[-1], 'color') and not game.discard[-1].color:
+        if game.discard and game.discard[-1].wild and not game.discard[-1].color:
             while True:
                 color_choice = input("Choose a color for the wild card (red/green/blue/yellow): ").strip().lower()
                 if color_choice in ['red', 'r']:

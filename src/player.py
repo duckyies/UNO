@@ -63,15 +63,13 @@ class Player:
             return None
 
         wild = ["WILD", "WILD+4"]
-        aliases = ["W","W+4","REV","R","S","NOU","FUCKU"]
+        aliases = ["W","W+4","REV","R","S"]
         wild_aliases = {
             "W": "WILD",
             "W+4": "WILD+4", 
             "REV": "REVERSE",
             "R": "REVERSE",
-            "NOU": "REVERSE",
             "S": "SKIP",
-            "FUCKU": "SKIP",
         }
         
         if card_id.upper() in aliases:
