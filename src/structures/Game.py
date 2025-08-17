@@ -25,7 +25,7 @@ class UnoGame:
     def generate_rules() -> List[Rule]:
         return [
             Rule(0, "The number of decks to use.", 1, "Decks", "integer", 8, 1),
-            Rule(1, "How many cards to pick up at the beginning.", 1, "Initial Cards", "integer", 5000, 1),
+            Rule(1, "How many cards to pick up at the beginning.", 7, "Initial Cards", "integer", 5000, 1),
             Rule(2, "Whether pickup cards (+2, +4) should also skip the next person's turn.", 1, "Draws Skip", "boolean", 0, 0),
             Rule(3, "Whether reverse cards skip turns when there's only two players left.", 1, "Reverses Skip", "boolean", 0, 0),
             Rule(4, "Whether someone must play a card if they are able to.", 0, "Must Play", "boolean", 0, 0),
@@ -289,7 +289,7 @@ class UnoGame:
         player = next((ply for ply in self.queue if ply.id == call_player_id), None)
         if not player:
             return "Player not found!"
-        if len(player.hand) == 1:
+        if len(player.hand) == 2:
             if player.called:
                 return "You already said UNO!"
             else:
