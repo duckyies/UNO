@@ -2,9 +2,11 @@ import time
 import os
 import sys
 from game import UnoGame
+import card
+import player
 
 def clear_terminal():
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system('cls')
 
 def countdown(seconds=5):
     print(f"\nPass the device to the next player!")
@@ -13,8 +15,7 @@ def countdown(seconds=5):
         time.sleep(1)
     print(" " * 20, end='\r') 
 
-def print_ascii_card(card):
-    """Print ASCII art representation of a card"""
+def print_ascii_card(card: card.Card):
     color_symbols = {
         "R": "♦", "G": "♣", "B": "♠", "Y": "♥"
     }
@@ -37,8 +38,7 @@ def print_ascii_card(card):
     print("└───────────┘")
     print(f"  {color_name}")
 
-def print_hand_ascii(player):
-    """Print player's hand in ASCII art with improved alignment"""
+def print_hand_ascii(player: player.Player):
     color_symbols = {"R": "♦", "G": "♣", "B": "♠", "Y": "♥"}
     
     print(f"\n{player.username}'s Hand ({len(player.hand)} cards):")
@@ -114,7 +114,7 @@ def play_terminal_game():
         print_hand_ascii(current_player)
         
         print("\nCommands:")
-        print("  play <color> <number/type> - Play a card (e.g., 'play red 5', 'play blue skip')")
+        print("  play <color> <number/type> - Play a card (e.g., 'play r 5', 'play b s')")
         print("  draw - Draw a card")
         print("  table - Show game status")
         print("  uno - Call UNO when you have 1 card")

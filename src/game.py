@@ -13,13 +13,11 @@ class UnoGame:
         self.called_out: bool = False
         self.discard: List[Card] = []
         self.finished: List[Player] = []
-        self.dropped: List[Player] = []
-        self.started: bool = False
         self.drawn: int = 0
-        self.confirm: bool = False
         self.card_num: int = 1
         self.time_started: float = 0
         self.rules: List[Rule] = self.generate_rules()
+
 
     @staticmethod
     def generate_rules() -> List[Rule]:
@@ -81,7 +79,6 @@ class UnoGame:
         self.queue = [player for player in self.players.values()]
         self.time_started = time.time()
         self.discard.append(self.deck.pop())
-        self.started = True
         
         start_card_rule = self.get_rule("Initial Cards")
         if not start_card_rule:
@@ -167,7 +164,7 @@ class UnoGame:
         words = card_str.split()
         found_card_num = player.get_card(words)
         if found_card_num is not None:
-            card_obj = next((cd for cd in player.hand if cd.num == found_card_num), None)
+            card_obj = next((cd for cd in player.hand if cd.get_value() == found_card_num), None)
             if card_obj is None:
                 return f"Card {found_card_num} not found in hand, it's currently {player.username}'s turn"
 
@@ -185,7 +182,7 @@ class UnoGame:
                 elif card_obj.wild and not wild_color:
                     return f"Wild card played! Please specify a color. Usage: play wild red"
 
-                player.hand = [c for c in player.hand if c.num != found_card_num]
+                player.hand = [c for c in player.hand if c.get_value() != found_card_num]
                 player.sort_hand()
                 prefix = ""
                 extra = ""

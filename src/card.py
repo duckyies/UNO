@@ -43,7 +43,7 @@ class Card:
                 card_num = int(self.id)
                 val += card_num
             except ValueError:
-                pass
+                raise Exception("Invalid card found")
         
         return val
     
@@ -78,6 +78,3 @@ class Card:
         if not isinstance(other, Card):
             return NotImplemented
         return self.get_value() >= other.get_value()
-    
-    def __hash__(self) -> int:
-        return hash((self.id, self.color, self.num))

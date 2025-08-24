@@ -1,12 +1,6 @@
 from typing import List, Optional, Dict
 from card import Card 
 
-class PlayerOutput:
-    def __init__(self, player_id: int, cards_played: int, name: str):
-        self.id = player_id
-        self.cards_played = cards_played
-        self.name = name
-
 class Player:
     def __init__(self, player_id: int, username: str):
         self.id = player_id
@@ -14,8 +8,6 @@ class Player:
         self.hand: List[Card] = []
         self.called = False
         self.finished = False
-        self.cards_played = 0
-        self.messages: List[str] = []
 
     def cards_changed(self):
         self.sort_hand()
@@ -31,9 +23,6 @@ class Player:
             "yellow": "Y", "y": "Y", "Y": "Y",
         }
         return color_map.get(color, "")
-
-    def format_output(self) -> PlayerOutput:
-        return PlayerOutput(self.id, self.cards_played, self.username)
 
     def get_card(self, words: List[str]) -> Optional[int]:
         color = ""
@@ -62,7 +51,6 @@ class Player:
         if card_id == "":
             return None
 
-        wild = ["WILD", "WILD+4"]
         aliases = ["W","W+4","REV","R","S"]
         wild_aliases = {
             "W": "WILD",
@@ -78,26 +66,18 @@ class Player:
         if card_id.upper() in ["WILD", "WILD+4"]:
             for card in self.hand:
                 if card.id.upper() == card_id.upper():
-                    return card.num
+                    return card.get_value()
         else:
             if color == "":
                 return None
             for card in self.hand:
                 if card.id.upper() == card_id.upper() and card.color.upper() == color.upper():
-                    return card.num
+                    return card.get_value()
 
         return None
-
-
-    def send_message(self, message: str):
-        self.messages.append(message)
 
     def get_hand(self) -> str:
         self.sort_hand()
         hand_str = " | ".join([f"**{str(card)}**" for card in self.hand])
         return f"Here is your hand:\n\n{hand_str}\n\nYou currently have {len(self.hand)} card(s)."
-
-    def send_hand(self):
-        hand = self.get_hand()
-        self.send_message(hand)
 
