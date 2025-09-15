@@ -1,6 +1,5 @@
 import time
 import os
-import sys
 from game import UnoGame
 import card
 import player
@@ -87,15 +86,25 @@ def print_hand_ascii(player: player.Player):
 
 def play_terminal_game():
     clear_terminal()
-    print("Welcome to Terminal UNO!")
+    print("Welcome to UNO!")
     print("=" * 30)
     
-    player1_name = input("Enter Player 1's name: ").strip() or "Player 1"
-    player2_name = input("Enter Player 2's name: ").strip() or "Player 2"
+    num = int(input("Enter number of players: "))
+    while num < 1:
+        print("Game needs atleast 1 player")
+        num = int(input("Enter number of players: "))
+
+    players = [input(f"Enter Player {i+1}'s name: ").strip() for i in range(num)]
     
     game = UnoGame()
-    game.add_player(player1_name)
-    game.add_player(player2_name)
+    for player in players:
+        game.add_player(player)
+
+    ai_num = int(input("Enter number of AI: "))
+    ai_players = [f"AI-{i+1}" for i in range(ai_num)]
+    
+    for player in ai_players:
+        game.add_player(player, True)
     game.start()
     
     print(f"\nGame started! {game.get_curr_player().username} goes first.")
@@ -103,6 +112,7 @@ def play_terminal_game():
     
     while game.queue: 
         current_player = game.get_curr_player()
+            
         current_card = game.get_curr_card()
         
         print(f"Current Player: {current_player.username}")
@@ -111,7 +121,8 @@ def play_terminal_game():
         print("Current card on table:")
         print_ascii_card(current_card)
         
-        print_hand_ascii(current_player)
+        if not current_player.is_ai:
+            print_hand_ascii(current_player)
         
         print("\nCommands:")
         print("  play <color> <number/type> - Play a card (e.g., 'play r 5', 'play b s')")
@@ -119,51 +130,68 @@ def play_terminal_game():
         print("  table - Show game status")
         print("  uno - Call UNO when you have 1 card")
         print("  callout - Call out someone for not saying UNO")
-        print("  hand - Show your hand again")
+        print("  hand - Show your hand again" )
         print("  quit - Exit game")
         
         while True:
-            command = input(f"\n{current_player.username}, enter command: ").strip().lower()
-            
-            if command.startswith("play "):
-                card_input = command[5:]
-                result = game.play(card_input)
-                print(result)
-                
-                if "cannot play this card" in result or "not found in hand" in result:
-                    continue 
+            if current_player.is_ai:
+                play_cmd, wild_color = current_player.select_card_to_play(game)
+                print(f"{current_player.username} decides: {play_cmd}")
+
+                if play_cmd.startswith("play"):
+                    result = game.play(play_cmd[5:], wild_color)
+                    print(result)
+                    if len(current_player.hand) == 1 and not current_player.called:
+                        uno_result = game.uno(current_player.id)
+                        print(uno_result)
                 else:
-                    if not game.queue:
-                        print("\nGame Over!")
-                        print(game.scoreboard())
-                        return
-                    break  
-                    
-            elif command == "draw":
-                result = game.draw()
-                print(f"Drew card number: {result}")
+                    result = game.draw()
+                    print(f"{current_player.username} draws a card")
                 break
-                
-            elif command == "table":
-                print(game.table())
-                
-            elif command == "uno":
-                result = game.uno(current_player.id)
-                print(result)
-                
-            elif command == "callout":
-                result = game.callout(current_player.id)
-                print(result)
-                
-            elif command == "hand":
-                print_hand_ascii(current_player)
-                
-            elif command == "quit":
-                print("Thanks for playing!")
-                return
-                
+                                                                
             else:
-                print("Invalid command. Try again.")
+
+                command = input(f"\n{current_player.username}, enter command: ").strip().lower()
+                
+                if command.startswith("play "):
+                    card_input = command[5:]
+                    result = game.play(card_input)
+                    print(result)
+                    
+                    if "cannot play this card" in result or "not found in hand" in result:
+                        continue 
+                    else:
+                        if not game.queue:
+                            print("\nGame Over!")
+                            print(game.scoreboard())
+                            return
+                        break  
+                        
+                elif command == "draw":
+                    result = game.draw()
+                    print(f"Drew card number: {result}")
+                    break
+                    
+                elif command == "table":
+                    print(game.table())
+                    
+                elif command == "uno":
+                    result = game.uno(current_player.id)
+                    print(result)
+                    
+                elif command == "callout":
+                    result = game.callout(current_player.id)
+                    print(result)
+                    
+                elif command == "hand":
+                    print_hand_ascii(current_player)
+                    
+                elif command == "quit":
+                    print("Thanks for playing!")
+                    return
+                    
+                else:
+                    print("Invalid command. Try again.")
         
         if game.discard and game.discard[-1].wild and not game.discard[-1].color:
             while True:

@@ -66,8 +66,8 @@ class UnoGame:
     def shuffle_deck(self):
         random.shuffle(self.deck)
 
-    def add_player(self, name: str) -> Player:
-        player = Player(len(self.players), name)
+    def add_player(self, name: str, is_ai: bool = False) -> Player:
+        player = Player(len(self.players), name, is_ai)
         self.players[player.id] = player
         return player
 
@@ -286,7 +286,7 @@ class UnoGame:
         player = next((ply for ply in self.queue if ply.id == call_player_id), None)
         if not player:
             return "Player not found!"
-        if len(player.hand) == 2:
+        if len(player.hand) <= 2:
             if player.called:
                 return "You already said UNO!"
             else:

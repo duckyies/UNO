@@ -1,9 +1,10 @@
-from typing import List, Optional, Dict
+from typing import List, Optional
 from card import Card 
-
+from game import UnoGame
 class Player:
-    def __init__(self, player_id: int, username: str):
+    def __init__(self, player_id: int, username: str, is_ai: bool = False):
         self.id = player_id
+        self.is_ai = is_ai
         self.username = username
         self.hand: List[Card] = []
         self.called = False
@@ -80,4 +81,59 @@ class Player:
         self.sort_hand()
         hand_str = " | ".join([f"**{str(card)}**" for card in self.hand])
         return f"Here is your hand:\n\n{hand_str}\n\nYou currently have {len(self.hand)} card(s)."
+
+    def select_card_to_play(self, game: UnoGame) -> tuple:
+
+        current_card = game.get_curr_card()
+        hand = self.hand[:]
+        hold_numbers = set()
+
+        numbers_seen = {}
+        for card in hand:
+            if not card.wild:
+                numbers_seen.setdefault(card.id, set()).add(card.color)
+        for num, colors in numbers_seen.items():
+            if len(colors) > 1:
+                hold_numbers.add(num)
+
+        for card in hand:
+            if (card.id in ["+2", "SKIP", "REVERSE", "WILD+4"] or card.wild) and (
+                card.wild or card.color == current_card.color or card.id == current_card.id
+            ):
+                if card.wild:
+                    color_counts = {}
+                    for c in hand:
+                        if c.color and not c.wild:
+                            color_counts[c.color] = color_counts.get(c.color, 0) + 1
+                    best_color = max(color_counts, key=color_counts.get) if color_counts else "R"
+                    return (f"play {card.id.lower()} {best_color.lower()}", best_color)
+                return (f"play {card.color.lower()} {card.id.lower()}", None)
+
+        for card in hand:
+            if not card.wild and card.id not in hold_numbers and (
+                card.color == current_card.color or card.id == current_card.id
+            ):
+                return (f"play {card.color.lower()} {card.id.lower()}", None)
+
+        for card in hand:
+            if not card.wild and card.id in hold_numbers and (
+                card.color == current_card.color or card.id == current_card.id
+            ):
+                return (f"play {card.color.lower()} {card.id.lower()}", None)
+
+        if len(self.hand) == 2 and not self.called:
+            game.uno(self.id)
+
+        for card in hand:
+            if card.wild or card.color == current_card.color or card.id == current_card.id:
+                if card.wild:
+                    color_counts = {}
+                    for c in hand:
+                        if c.color and not c.wild:
+                            color_counts[c.color] = color_counts.get(c.color, 0) + 1
+                    best_color = max(color_counts, key=color_counts.get) if color_counts else "R"
+                    return (f"play {card.id.lower()} {best_color.lower()}", best_color)
+                return (f"play {card.color.lower()} {card.id.lower()}", None)
+
+        return ("draw", None)
 

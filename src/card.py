@@ -1,5 +1,3 @@
-from enum import Enum
-from typing import Optional
 
 class Card:
     def __init__(self, card_id: str, color: str, num: int):
