@@ -3,6 +3,7 @@ import os
 from game import UnoGame
 import card
 import player
+from constants import *
 
 def clear_terminal():
     os.system('cls')
@@ -15,15 +16,12 @@ def countdown(seconds=5):
     print(" " * 20, end='\r') 
 
 def print_ascii_card(card: card.Card):
-    color_symbols = {
-        "R": "♦", "G": "♣", "B": "♠", "Y": "♥"
-    }
-    
+
     if card.wild:
         symbol = "★"
         color_name = "WILD"
     else:
-        symbol = color_symbols.get(card.color, "?")
+        symbol = COLOR_SYMBOLS.get(card.color, "?")
         color_name = card.get_color_name()
     
     card_display = card.id if len(card.id) <= 7 else card.id[:7]
@@ -38,7 +36,6 @@ def print_ascii_card(card: card.Card):
     print(f"  {color_name}")
 
 def print_hand_ascii(player: player.Player):
-    color_symbols = {"R": "♦", "G": "♣", "B": "♠", "Y": "♥"}
     
     print(f"\n{player.username}'s Hand ({len(player.hand)} cards):")
     print("=" * 50)
@@ -52,7 +49,7 @@ def print_hand_ascii(player: player.Player):
         print()
         
         for card in row_cards:
-            symbol = "★" if card.wild else color_symbols.get(card.color, "?")
+            symbol = "★" if card.wild else COLOR_SYMBOLS.get(card.color, "?")
             print(f"│{symbol}       {symbol}│", end=" ")
         print()
         
@@ -70,7 +67,7 @@ def print_hand_ascii(player: player.Player):
         print()
         
         for card in row_cards:
-            symbol = "★" if card.wild else color_symbols.get(card.color, "?")
+            symbol = "★" if card.wild else COLOR_SYMBOLS.get(card.color, "?")
             print(f"│{symbol}       {symbol}│", end=" ")
         print()
         
@@ -90,10 +87,6 @@ def play_terminal_game():
     print("=" * 30)
     
     num = int(input("Enter number of players: "))
-    while num < 1:
-        print("Game needs atleast 1 player")
-        num = int(input("Enter number of players: "))
-
     players = [input(f"Enter Player {i+1}'s name: ").strip() for i in range(num)]
     
     game = UnoGame()
@@ -103,6 +96,10 @@ def play_terminal_game():
     ai_num = int(input("Enter number of AI: "))
     ai_players = [f"AI-{i+1}" for i in range(ai_num)]
     
+    while num + ai_num < 2:
+        print("Game needs atleast 2 players")
+        num = int(input("Enter number of players: "))
+
     for player in ai_players:
         game.add_player(player, True)
     game.start()
@@ -195,21 +192,12 @@ def play_terminal_game():
         
         if game.discard and game.discard[-1].wild and not game.discard[-1].color:
             while True:
-                color_choice = input("Choose a color for the wild card (red/green/blue/yellow): ").strip().lower()
-                if color_choice in ['red', 'r']:
-                    game.discard[-1].color = 'R'
-                    break
-                elif color_choice in ['green', 'g']:
-                    game.discard[-1].color = 'G'
-                    break
-                elif color_choice in ['blue', 'b']:
-                    game.discard[-1].color = 'B'
-                    break
-                elif color_choice in ['yellow', 'y']:
-                    game.discard[-1].color = 'Y'
+                color_choice = input("Choose a color for the wild card: ").strip().lower()
+                if color_choice in COLOR_ALIASES:
+                    game.discard[-1].color = COLOR_ALIASES[color_choice]
                     break
                 else:
-                    print("Invalid color. Please choose red, green, blue, or yellow.")
+                    print("Invalid color.")
             game.play(card_input, color_choice)
         
         input(f"\n{current_player.username}'s turn is over. Press Enter to continue...")

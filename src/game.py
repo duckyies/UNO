@@ -4,6 +4,7 @@ from typing import Dict, List, Optional
 from card import Card
 from player import Player
 from rules import Rule
+from constants import COLORS, COLOR_ALIASES, COLOR_SYMBOLS
 
 class UnoGame:
     def __init__(self):
@@ -39,7 +40,7 @@ class UnoGame:
         
         decks = decks_rule.value
         for _ in range(decks):
-            for color in ["R", "G", "B", "Y"]:
+            for color in COLORS:
                 for card_num in range(10):
                     self.deck.append(Card(str(card_num), color, self.card_num))
                     self.card_num += 1
@@ -178,8 +179,8 @@ class UnoGame:
                     if parsed_color:
                         card_obj.color = parsed_color
                     else:
-                        return "Invalid color for wild card. Please choose red, green, blue, or yellow."
-                elif card_obj.wild and not wild_color:
+                        return "Invalid color for wild card."
+                elif card_obj.wild and (not wild_color and not card_obj.color):
                     return f"Wild card played! Please specify a color. Usage: play wild red"
 
                 player.hand = [c for c in player.hand if c.get_value() != found_card_num]
