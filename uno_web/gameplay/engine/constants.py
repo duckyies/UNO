@@ -1,5 +1,5 @@
 COLORS = {
-    "O": "Orange",
+    "R": "Red",
     "G": "Green",
     "B": "Blue",
     "Y": "Yellow"
@@ -14,14 +14,14 @@ COLOR_ALIASES = {
 }
 
 COLOR_SYMBOLS = {
-    "O": "♦",
+    "R": "♦",
     "G": "♣",
     "B": "♠", 
     "Y": "♥",
 }
 
 COLOR_VALUES = {
-    "O": 100000,
+    "R": 100000,
     "G": 1000,
     "B": 100,
     "Y": 10000,

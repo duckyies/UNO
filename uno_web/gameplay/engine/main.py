@@ -1,9 +1,9 @@
 import time
 import os
-from game import UnoGame
-import card
-import player
-from constants import *
+from  gameplay.engine.game import UnoGame
+import  gameplay.engine.card
+import  gameplay.engine.player
+from  gameplay.engine.constants import *
 
 def clear_terminal():
     os.system('cls')

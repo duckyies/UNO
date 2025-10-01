@@ -1,10 +1,10 @@
 import random
 import time
 from typing import Dict, List, Optional
-from card import Card
-from player import Player
-from rules import Rule
-from constants import COLORS, COLOR_ALIASES, COLOR_SYMBOLS
+from  gameplay.engine.card import Card
+from  gameplay.engine.player import Player
+from  gameplay.engine.rules import Rule
+from  gameplay.engine.constants import COLORS, COLOR_ALIASES, COLOR_SYMBOLS, COLOR_VALUES
 
 class UnoGame:
     def __init__(self):
@@ -157,6 +157,7 @@ class UnoGame:
     def play(self, card_str: str, wild_color: str = None) -> str:       
         if not self.queue:
             return "Game has ended!"
+        print(card_str)
 
         rev_skip = self.get_rule("Reverses Skip").value
         draw_skip = self.get_rule("Draws Skip").value
@@ -165,7 +166,8 @@ class UnoGame:
         words = card_str.split()
         found_card_num = player.get_card(words)
         if found_card_num is not None:
-            card_obj = next((cd for cd in player.hand if cd.get_value() == found_card_num), None)
+            temp = next((cd for cd in player.hand if cd.get_value() == found_card_num), None)
+            card_obj = Card(temp.id, temp.color, temp.num)
             if card_obj is None:
                 return f"Card {found_card_num} not found in hand, it's currently {player.username}'s turn"
 
@@ -180,10 +182,8 @@ class UnoGame:
                         card_obj.color = parsed_color
                     else:
                         return "Invalid color for wild card."
-                elif card_obj.wild and (not wild_color and not card_obj.color):
-                    return f"Wild card played! Please specify a color. Usage: play wild red"
 
-                player.hand = [c for c in player.hand if c.get_value() != found_card_num]
+                player.hand = [c for c in player.hand if c.get_value() != found_card_num ]
                 player.sort_hand()
                 prefix = ""
                 extra = ""
@@ -238,7 +238,7 @@ class UnoGame:
                 self.next()
                 return prefix + "\n" + extra
             else:
-                return f"You cannot play this card here. Last played card was {curr_card.id} {curr_card.color}"
+                return f"You cannot play this card here. Last played card was {curr_card.color} {curr_card.id}"
 
         return f"Card {card_str} not found in hand, it's currently {player.username}'s turn"
 

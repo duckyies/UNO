@@ -1,0 +1,92 @@
+body {
+  font-family: Inter, system-ui, Arial, sans-serif;
+  background: linear-gradient(180deg,#f8fafc,#eef2f7);
+  color: #111827;
+  margin: 0;
+  padding: 2rem;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.uno-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(15,23,42,0.08);
+  padding: 1.5rem;
+}
+
+.topbar {
+  display:flex;
+  gap:10px;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom: 0.75rem;
+}
+
+.board {
+  display:flex;
+  gap: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.discard {
+  flex: 1;
+}
+
+.players {
+  flex: 1;
+}
+
+.card {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  border-radius: 8px;
+  border: 2px solid #111;
+  padding: 0.6rem;
+  width: 140px;
+  height: 100px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  background: linear-gradient(#fff,#f7f7f7);
+  margin-bottom: 0.5rem;
+}
+
+.card.big { width: 200px; height: 140px; }
+.card.small { width: 64px; height: 44px; display:inline-block; margin-right:6px; }
+
+.card .symbol { font-size: 20px; }
+.card .id { font-weight:700; margin-top:4px; }
+.card .color { font-size: 12px; margin-top:4px; opacity: 0.8; }
+
+.hand-cards {
+  display:flex;
+  flex-wrap:wrap;
+  gap: 0.6rem;
+}
+
+.card.clickable {
+  cursor: pointer;
+  transition: transform .12s ease;
+}
+.card.clickable:hover { transform: translateY(-4px); box-shadow: 0 14px 34px rgba(2,6,23,0.14); }
+
+.action-row { margin-top: 12px; display:flex; gap: 8px; align-items:center; }
+
+.btn {
+  background: #0ea5a4;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.btn.small { padding: 6px 8px; font-size: 0.9rem }
+.btn.negative { background: #ef4444; }
+
+.messages { margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #e5e7eb; }
+
+.hint { color: #374151; font-size: 0.9rem; margin-top: 0.6rem; }

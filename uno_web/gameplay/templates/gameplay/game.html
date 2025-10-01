@@ -1,0 +1,378 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  /* Dark mode theme */
+  body { background: #121212; color: #e0e0e0; }
+  
+  .uno-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+  
+  .topbar { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 20px; 
+    background: #1e1e1e; 
+    padding: 10px; 
+    border-radius: 8px;
+    border: 1px solid #333;
+  }
+  
+  .board { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  
+  .discard { 
+    background: #1a1a1a; 
+    padding: 15px; 
+    border-radius: 8px;
+    border: 1px solid #333;
+  }
+  
+  .players { 
+    background: #1a1a1a; 
+    padding: 15px; 
+    border-radius: 8px;
+    border: 1px solid #333;
+  }
+  
+  .card { 
+    display: inline-block; 
+    border: 2px solid #666; 
+    border-radius: 8px; 
+    padding: 10px; 
+    margin: 5px;
+    background: #2a2a2a;
+    min-width: 60px;
+    text-align: center;
+    position: relative;
+    color: #fff;
+  }
+  
+  .card.big { 
+    font-size: 1.5em; 
+    padding: 20px;
+    min-width: 100px;
+  }
+  
+  .card.clickable { 
+    cursor: pointer; 
+    transition: all 0.2s;
+  }
+  
+  .card.clickable:hover { 
+    transform: translateY(-5px); 
+    box-shadow: 0 5px 15px rgba(255,255,255,0.1);
+    border-color: #888;
+  }
+  
+  .card.wild { 
+    background: linear-gradient(45deg, #ff4444, #ffff44, #44ff44, #4444ff); 
+    color: white; 
+    border-color: #fff;
+  }
+  
+  .card[data-color="R"] { background: #611111; border-color: #f44336; }
+  .card[data-color="G"] { background: #116611; border-color: #4caf50; }
+  .card[data-color="B"] { background: #111166; border-color: #2196f3; }
+  .card[data-color="Y"] { background: #666611; border-color: #ffeb3b; }
+  
+  .symbol { font-size: 1.2em; margin-bottom: 5px; }
+  .card-id { font-weight: bold; }
+  .color-name { font-size: 0.8em; color: #aaa; margin-top: 5px; }
+  
+  .hand-cards { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 10px;
+    margin: 20px 0;
+  }
+  
+  .controls { 
+    background: #1a1a1a; 
+    padding: 20px; 
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #333;
+  }
+  
+  .action-row { 
+    display: flex; 
+    gap: 10px;
+    margin-top: 15px;
+  }
+  
+  .btn {
+    padding: 10px 20px;
+    background: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .btn:hover { background: #1976d2; }
+  .btn.small { padding: 5px 10px; font-size: 14px; }
+  .btn.negative { background: #f44336; }
+  .btn.negative:hover { background: #d32f2f; }
+  .btn.success { background: #4caf50; }
+  .btn.success:hover { background: #388e3c; }
+  .btn.warning { background: #ff9800; }
+  .btn.warning:hover { background: #f57c00; }
+  
+  .messages {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    padding: 15px;
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+  }
+  
+  .message-item {
+    padding: 5px 0;
+    border-bottom: 1px solid #333;
+    color: #e0e0e0;
+  }
+  
+  .message-item:last-child {
+    border-bottom: none;
+  }
+  
+  .player-item {
+    padding: 8px;
+    margin: 5px 0;
+    background: #2a2a2a;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid #444;
+  }
+  
+  .player-item.current {
+    background: #4a4a00;
+    border-color: #ffeb3b;
+    font-weight: bold;
+  }
+  
+  .player-item.finished {
+    background: #1a3a1a;
+    text-decoration: line-through;
+  }
+  
+  .wild-color-selector {
+    background: #2a2a2a;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+    text-align: center;
+    border: 1px solid #444;
+  }
+  
+  .color-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .color-btn {
+    width: 60px;
+    height: 60px;
+    border: 3px solid #666;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .color-btn:hover {
+    border-color: #fff;
+  }
+  
+  .color-btn.red { background: #f44336; color: white; }
+  .color-btn.green { background: #4caf50; color: white; }
+  .color-btn.blue { background: #2196f3; color: white; }
+  .color-btn.yellow { background: #ffeb3b; color: black; }
+  
+  .game-over {
+    text-align: center;
+    padding: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px;
+    margin: 20px 0;
+  }
+  
+  .hint { 
+    color: #888; 
+    font-style: italic;
+    margin-top: 10px;
+  }
+  
+  h1, h2, h3, h4 { color: #f0f0f0; }
+  
+  /* Style card form buttons to remove default button styles */
+  .card-form button {
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0;
+  }
+</style>
+
+<div class="uno-container">
+  {% if game_over %}
+    <div class="game-over">
+      <h1>🎮 Game Over!</h1>
+      <pre>{{ scoreboard }}</pre>
+      <form method="post" style="margin-top: 20px;">
+        {% csrf_token %}
+        <button type="submit" name="action" value="quit" class="btn">Start New Game</button>
+      </form>
+    </div>
+  {% else %}
+    <div class="topbar">
+      <h2>UNO – {{ current_player.username }}'s Turn {% if current_player.is_ai %}(AI){% endif %}</h2>
+      <div>
+        <form method="post" style="display:inline">
+          {% csrf_token %}
+          <button type="submit" name="action" value="table" class="btn small">📊 Table</button>
+        </form>
+        <form method="post" style="display:inline">
+          {% csrf_token %}
+          <button type="submit" name="action" value="quit" class="btn small negative">❌ Quit</button>
+        </form>
+      </div>
+    </div>
+
+    {% if messages %}
+    <div class="messages">
+      <h4>Recent Activity:</h4>
+      {% for msg in messages %}
+        <div class="message-item">{{ msg }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="board">
+      <div class="discard">
+        <h3>Discard Pile</h3>
+        {% if discard_top %}
+          <div class="card big {% if discard_top.wild %}wild{% endif %}" data-color="{{ discard_top.color }}">
+            <div class="symbol">{{ discard_top.symbol }}</div>
+            <div class="card-id">{{ discard_top.id }}</div>
+            <div class="color-name">{{ discard_top.color_name }}</div>
+          </div>
+        {% else %}
+          <div>No discard yet</div>
+        {% endif %}
+        
+        {% if discard_history %}
+          <h4>Recent Cards</h4>
+          <div class="recent">
+            {% for c in discard_history %}
+              <div class="card small" data-color="{{ c.color }}">
+                <div class="symbol">{{ c.symbol }}</div>
+                <div class="card-id">{{ c.id }}</div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+        
+        <p class="hint">Deck: {{ deck_count }} cards remaining</p>
+      </div>
+
+      <div class="players">
+        <h3>Players</h3>
+        {% for p in players %}
+          <div class="player-item {% if p.is_current %}current{% endif %} {% if p.finished %}finished{% endif %}">
+            <span>
+              {{ p.username }}
+              {% if p.is_ai %}🤖{% endif %}
+            </span>
+            <span>
+              {{ p.card_count }} cards
+              {% if p.called_uno %}🎯 UNO!{% endif %}
+            </span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="controls">
+      {% if current_player.is_ai %}
+        <p>🤖 AI is thinking... The page will refresh automatically.</p>
+        <meta http-equiv="refresh" content="2">
+      {% elif wild_color_pending %}
+        <div class="wild-color-selector">
+          <h3>🌈 Choose a color for your WILD card:</h3>
+          <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="select_wild_color">
+            <div class="color-buttons">
+              <button type="submit" name="wild_color" value="red" class="color-btn red">RED</button>
+              <button type="submit" name="wild_color" value="green" class="color-btn green">GREEN</button>
+              <button type="submit" name="wild_color" value="blue" class="color-btn blue">BLUE</button>
+              <button type="submit" name="wild_color" value="yellow" class="color-btn yellow">YELLOW</button>
+            </div>
+          </form>
+        </div>
+      {% elif not hand_revealed %}
+        <div style="text-align: center; padding: 40px;">
+          <h2>🎮 Pass device to {{ current_player.username }}</h2>
+          <p>Make sure other players can't see the screen!</p>
+          <form method="post">
+            {% csrf_token %}
+            <button type="submit" name="action" value="start_turn" class="btn success" style="font-size: 20px; padding: 15px 30px;">
+              👀 Reveal Hand
+            </button>
+          </form>
+        </div>
+      {% else %}
+        <div class="hand-area">
+          <h3>Your Hand ({{ hand_cards|length }} cards)</h3>
+          <div class="hand-cards">
+            {% for c in hand_cards %}
+              <form method="post" class="card-form" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="play">
+                <input type="hidden" name="card_input" value="{{ c.card_str }}">
+                <button type="submit" class="card clickable {% if c.wild %}wild{% endif %}" data-color="{{ c.color }}">
+                  <div class="symbol">{{ c.symbol }}</div>
+                  <div class="card-id">{{ c.id }}</div>
+                  <div class="color-name">{{ c.color_name }}</div>
+                </button>
+              </form>
+            {% endfor %}
+          </div>
+
+          <div class="action-row">
+            <form method="post" style="display:inline">
+              {% csrf_token %}
+              <button class="btn warning" name="action" value="draw">📥 Draw Card</button>
+            </form>
+
+            {% if current_player.card_count <= 2 and not current_player.called_uno %}
+              <form method="post" style="display:inline">
+                {% csrf_token %}
+                <button class="btn success" name="action" value="uno">🎯 Call UNO!</button>
+              </form>
+            {% endif %}
+
+            <form method="post" style="display:inline">
+              {% csrf_token %}
+              <button class="btn" name="action" value="callout">📢 Call Out</button>
+            </form>
+
+            <form method="post" style="display:inline">
+              {% csrf_token %}
+              <button class="btn negative" name="action" value="end_turn">✅ End Turn</button>
+            </form>
+          </div>
+
+          <p class="hint">Click a card to play it, or use the action buttons above.</p>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

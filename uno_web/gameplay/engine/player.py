@@ -1,6 +1,6 @@
 from typing import List, Optional
-from card import Card 
-from constants import *
+from  gameplay.engine.card import Card 
+from  gameplay.engine.constants import *
 class Player:
     def __init__(self, player_id: int, username: str, is_ai: bool = False):
         self.id = player_id

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="uno-container">
+  <h1>Start UNO Game</h1>
+  <form method="post">
+    {% csrf_token %}
+    <label>Number of human players:
+      <input type="number" name="human_count" value="1" min="1" max="4" />
+    </label>
+    <div id="human-names">
+      <!-- Provide 4 fields, server will only read the number requested -->
+      <input type="text" name="human_name_1" placeholder="Player 1 name" value="Player1" />
+      <input type="text" name="human_name_2" placeholder="Player 2 name" />
+      <input type="text" name="human_name_3" placeholder="Player 3 name" />
+      <input type="text" name="human_name_4" placeholder="Player 4 name" />
+    </div>
+
+    <label>Number of AI:
+      <input type="number" name="ai_count" value="1" min="0" max="5" />
+    </label>
+
+    <button type="submit" class="btn">Start Game</button>
+  </form>
+</div>
+
+<script>
+  // small UX: show/hide name fields depending on human_count
+  const humanCountInput = document.querySelector('input[name="human_count"]');
+  humanCountInput.addEventListener("change", () => {
+    const n = parseInt(humanCountInput.value) || 1;
+    for (let i=1; i<=4; i++){
+      const el = document.querySelector(`input[name="human_name_${i}"]`);
+      el.style.display = i <= n ? "inline-block" : "none";
+    }
+  });
+  humanCountInput.dispatchEvent(new Event('change'));
+</script>
+{% endblock %}

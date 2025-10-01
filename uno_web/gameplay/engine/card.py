@@ -1,4 +1,4 @@
-from constants import *
+from  gameplay.engine.constants import *
 
 class Card:
     def __init__(self, card_id: str, color: str, num: int):
