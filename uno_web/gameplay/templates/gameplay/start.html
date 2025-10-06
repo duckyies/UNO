@@ -8,7 +8,6 @@
       <input type="number" name="human_count" value="1" min="1" max="4" />
     </label>
     <div id="human-names">
-      <!-- Provide 4 fields, server will only read the number requested -->
       <input type="text" name="human_name_1" placeholder="Player 1 name" value="Player1" />
       <input type="text" name="human_name_2" placeholder="Player 2 name" />
       <input type="text" name="human_name_3" placeholder="Player 3 name" />
@@ -24,7 +23,6 @@
 </div>
 
 <script>
-  // small UX: show/hide name fields depending on human_count
   const humanCountInput = document.querySelector('input[name="human_count"]');
   humanCountInput.addEventListener("change", () => {
     const n = parseInt(humanCountInput.value) || 1;

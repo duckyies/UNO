@@ -183,7 +183,15 @@ class UnoGame:
                     else:
                         return "Invalid color for wild card."
 
-                player.hand = [c for c in player.hand if c.get_value() != found_card_num ]
+                temp_arr = []
+                done = False
+                for c in player.hand:
+                    if (c.get_value() == found_card_num) and not done:
+                        done = True
+                        continue
+                    temp_arr.append(c)
+                done = True
+                player.hand = temp_arr
                 player.sort_hand()
                 prefix = ""
                 extra = ""
