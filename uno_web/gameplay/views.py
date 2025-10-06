@@ -74,7 +74,7 @@ def _format_card_for_template(card):
         symbol = "★"
     elif is_wild:
         display = card_id
-        color_name = card.get_color_name() if hasattr(card, 'get_color_name') else "Wild"
+        color_name = card.get_color_name() 
         symbol = "★"
     else:
         display = f"{color} {card_id}" if color else card_id
@@ -255,7 +255,6 @@ def game_view(request):
             
             try:
                 if wild_color:
-                    print("here for something")
                     result = game.play(card_input)
                     _add_message(request, f"✅ {current_player.username} played {card_input} and chose {wild_color}")
                 else:
@@ -312,7 +311,7 @@ def game_view(request):
                     request.session[WILD_COLOR_PENDING] = None
             
             return redirect("uno_game")
-        
+         
         elif action == "draw":
             try:
                 result = game.draw()
